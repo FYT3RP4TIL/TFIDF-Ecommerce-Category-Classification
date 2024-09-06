@@ -9,6 +9,7 @@
   - [Machine Learning Models](#machine-learning-models)
 - [Results](#results)
 - [Best Performing Model](#best-performing-model)
+- [Code Snippets](#code-snippets)
 - [Usage](#usage)
 - [Dependencies](#dependencies)
 
@@ -40,22 +41,6 @@ We use the spaCy library for text preprocessing:
 
 1. Remove stop words
 2. Lemmatize the text
-
-```python
-import spacy
-
-nlp = spacy.load("en_core_web_sm")
-
-def preprocess(text):
-    doc = nlp(text)
-    filtered_tokens = []
-    for token in doc:
-        if token.is_stop or token.is_punct:
-            continue
-        filtered_tokens.append(token.lemma_)
-    
-    return " ".join(filtered_tokens)
-```
 
 ### Feature Extraction
 
@@ -124,7 +109,86 @@ weighted avg       0.97      0.97      0.97      4800
 
 ## 🏆 Best Performing Model
 
-The Random Forest model performed the best, achieving an overall accuracy of 97% and consistently high precision, recall, and F1-scores across all categories.
+The Random Forest model performed the best, achieving an overall accuracy of 97% and consistently high precision, recall, and F1-scores across all categories. Here's the detailed report for the best model (Random Forest with preprocessing):
+
+```
+              precision    recall  f1-score   support
+
+           0       0.96      0.96      0.96      1200
+           1       0.98      0.97      0.98      1200
+           2       0.98      0.97      0.98      1200
+           3       0.98      0.99      0.98      1200
+
+    accuracy                           0.98      4800
+   macro avg       0.98      0.98      0.98      4800
+weighted avg       0.98      0.98      0.98      4800
+```
+
+This model achieved slightly better performance with preprocessing, improving the overall accuracy to 98%.
+
+## 💻 Code Snippets
+
+### Preprocessing Function
+
+```python
+import spacy
+
+nlp = spacy.load("en_core_web_sm")
+
+def preprocess(text):
+    doc = nlp(text)
+    filtered_tokens = []
+    for token in doc:
+        if token.is_stop or token.is_punct:
+            continue
+        filtered_tokens.append(token.lemma_)
+    
+    return " ".join(filtered_tokens)
+```
+
+### Pipeline for KNN Model
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+clf = Pipeline([
+     ('vectorizer_tfidf', TfidfVectorizer()),    
+     ('KNN', KNeighborsClassifier())         
+])
+
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+```
+
+### Pipeline for Multinomial Naive Bayes Model
+
+```python
+from sklearn.naive_bayes import MultinomialNB
+
+clf = Pipeline([
+     ('vectorizer_tfidf', TfidfVectorizer()),    
+     ('Multi NB', MultinomialNB())         
+])
+
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+```
+
+### Pipeline for Random Forest Model (Best Performing)
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+clf = Pipeline([
+     ('vectorizer_tfidf', TfidfVectorizer()),
+     ('Random Forest', RandomForestClassifier())         
+])
+
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+```
 
 ## 🚀 Usage
 
@@ -132,6 +196,28 @@ The Random Forest model performed the best, achieving an overall accuracy of 97%
 2. Run the preprocessing function on your text data.
 3. Use the scikit-learn Pipeline to vectorize the text and apply the chosen model.
 4. Predict categories for new product descriptions.
+
+Example:
+```python
+# Assuming you have your data in X_train, y_train, X_test, y_test
+
+# Preprocess your data
+X_train_preprocessed = X_train.apply(preprocess)
+X_test_preprocessed = X_test.apply(preprocess)
+
+# Create and train the model
+clf = Pipeline([
+     ('vectorizer_tfidf', TfidfVectorizer()),
+     ('Random Forest', RandomForestClassifier())         
+])
+clf.fit(X_train_preprocessed, y_train)
+
+# Make predictions
+y_pred = clf.predict(X_test_preprocessed)
+
+# Evaluate the model
+print(classification_report(y_test, y_pred))
+```
 
 ## 📚 Dependencies
 
