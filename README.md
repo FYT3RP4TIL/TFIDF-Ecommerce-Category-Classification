@@ -1,4 +1,4 @@
-# 🛍️ E-commerce Product Categorization using NLP and Machine Learning
+# 🛍️ E-commerce Product Categorization using TFIDF
 
 ## 📋 Table of Contents
 - [Project Overview](#project-overview)
