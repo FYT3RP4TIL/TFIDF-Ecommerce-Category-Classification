@@ -44,6 +44,24 @@ We use the spaCy library for text preprocessing:
 1. Remove stop words
 2. Lemmatize the text
 
+```python
+import spacy
+
+# load english language model and create nlp object from it
+nlp = spacy.load("en_core_web_sm") 
+
+def preprocess(text):
+    # remove stop words and lemmatize the text
+    doc = nlp(text)
+    filtered_tokens = []
+    for token in doc:
+        if token.is_stop or token.is_punct:
+            continue
+        filtered_tokens.append(token.lemma_)
+    
+    return " ".join(filtered_tokens) 
+```
+
 ### Feature Extraction
 
 We use TF-IDF (Term Frequency-Inverse Document Frequency) for feature extraction:
